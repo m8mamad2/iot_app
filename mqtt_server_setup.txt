@@ -1,0 +1,16 @@
+# Install:
+	sudo apt update
+	sudo apt install mosquitto mosquitto-clients
+
+# Enable:
+	sudo systemctl start mosquitto
+	sudo systemctl enable mosquitto	
+
+
+#Test:
+	in 1 terminal:
+		mosquitto_pub -h localhost -t "test/topic" -m "Hello MQTT"
+	
+	in 2 terminal:
+		mosquitto_sub -h localhost -t "test/topic"
+
