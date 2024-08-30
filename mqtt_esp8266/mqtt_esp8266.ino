@@ -1,23 +1,3 @@
-/*
- Basic ESP8266 MQTT example
- This sketch demonstrates the capabilities of the pubsub library in combination
- with the ESP8266 board/library.
- It connects to an MQTT server then:
-  - publishes "hello world" to the topic "outTopic" every two seconds
-  - subscribes to the topic "inTopic", printing out any messages
-    it receives. NB - it assumes the received payloads are strings not binary
-  - If the first character of the topic "inTopic" is an 1, switch ON the ESP Led,
-    else switch it off
- It will reconnect to the server if the connection is lost using a blocking
- reconnect function. See the 'mqtt_reconnect_nonblocking' example for how to
- achieve the same result without blocking the main loop.
- To install the ESP8266 board, (using Arduino 1.6.4+):
-  - Add the following 3rd party board manager under "File -> Preferences -> Additional Boards Manager URLs":
-       http://arduino.esp8266.com/stable/package_esp8266com_index.json
-  - Open the "Tools -> Board -> Board Manager" and click install for the ESP8266"
-  - Select your ESP8266 in "Tools -> Board" 
-*/
-
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
@@ -25,7 +5,7 @@
 
 const char* ssid = ":/";
 const char* password = "cvlb00513";
-const char* mqtt_server = "192.168.63.143";
+const char* mqtt_server = "192.168.199.143";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -33,6 +13,9 @@ unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE	(50)
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
+const int led = 2;
+const int ledPin = 13;
+const int ledX = D1;
 
 void setup_wifi() {
 
@@ -69,11 +52,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   // Switch on the LED if an 1 was received as first character
   if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-    // but actually the LED is on; this is because
-    // it is active low on the ESP-01)
+    digitalWrite(BUILTIN_LED, LOW);
+    digitalWrite(led, LOW);
+    digitalWrite(ledPin, LOW);
+    digitalWrite(ledX, LOW);
   } else {
-    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+    digitalWrite(BUILTIN_LED, HIGH);
+    digitalWrite(ledPin, HIGH);
+    digitalWrite(led, HIGH);  
+    digitalWrite(ledX, HIGH);
   }
 
 }
@@ -107,7 +94,10 @@ void reconnect() {
 }
 
 void setup() {
-  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
+  pinMode(BUILTIN_LED, OUTPUT);
+  pinMode(led, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(ledX, OUTPUT);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);

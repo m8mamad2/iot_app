@@ -1,72 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:iot_flutter/service/mqtt_connection_service.dart';
+import 'package:iot_flutter/utils/utils.dart';
+import 'package:iot_flutter/widget/switch_widget.dart';
 
 
-Size size(BuildContext context)=> MediaQuery.sizeOf(context);
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+class _HomeScreenState extends State<HomeScreen> {
+
+  MqttConnectionService mqttService = MqttConnectionService();
+
+  @override
+  void initState() {
+    super.initState();
+
+    mqttService.setup();
+    mqttService.connection();
+    
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff060912),
-      body: Column(
-        children: [
-          SizedBox(height: 100,),
-          CustomPaint(
-            size: Size(size(context).width*0.5, size(context).height*0.2), 
-            painter: RPSCustomPainter(),
+      body: ValueListenableBuilder(
+        valueListenable: isLamOnValue,
+        builder: (context, value, child) => Container(
+          color: value ? Color(0xff060912) : Colors.white,
+          height: size(context).height,
+          width: double.infinity,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 100,),
+                SwitchWidget(mqttService),
+              ]
+            ),
           ),
-        ]
+          ),
       )
     );
   }
-}
-
-class RPSCustomPainter extends CustomPainter{
-  
-  @override
-  void paint(Canvas canvas, Size size) {
-    
-    
-
-  // Triangle
-  Paint paintFill1 = Paint()
-      ..color = const Color(0xff182943)
-      ..style = PaintingStyle.fill
-      ..strokeWidth = size.width*0.00
-      ..strokeCap = StrokeCap.butt
-      ..strokeJoin = StrokeJoin.miter;
-     
-         
-    Path path_1 = Path();
-    path_1.moveTo(size.width*0.5084833,size.height*-0.2902857);
-    path_1.quadraticBezierTo(size.width*-0.0296333,size.height*1.0083429,size.width*-0.0400500,size.height*1.0383429);
-    path_1.cubicTo(size.width*-0.0218500,size.height*1.2303714,size.width*0.9771000,size.height*1.1884000,size.width*1.0268167,size.height*1.0264286);
-    path_1.quadraticBezierTo(size.width*1.0164000,size.height*0.9964286,size.width*0.5084833,size.height*-0.2902857);
-    path_1.close();
-
-    canvas.drawPath(path_1, paintFill1);
-  
-
-  // Triangle
-  Paint paintStroke1 = Paint()
-      ..color = const Color(0xff182943)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.bevel;
-     
-         
-    
-    canvas.drawPath(path_1, paintStroke1);
-  
-    
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
-  
 }

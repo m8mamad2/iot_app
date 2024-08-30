@@ -6,7 +6,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MqttConnectionService{
 
-  final client = MqttServerClient('192.168.178.143', '');
+  final client = MqttServerClient('192.168.199.143', '');
   int ping = 0;
   int pong = 0;
 
@@ -43,24 +43,21 @@ class MqttConnectionService{
       await client.connect();
       print('--------> Mosauitto client connection');
     }
-    on NoConnectionException catch(e){
-      print(' 1 -----------> $e');
+    on NoConnectionException {
       client.disconnect();
     }
-    on SocketException catch(e){
+    on SocketException {
       client.disconnect();
-      print('2---------> $e');
     }
     catch(e){
       client.disconnect();
-      print('3---------> $e');
     }
 
-    if(client.connectionStatus!.state == MqttConnectionState.connected)print('Mosquitto Client is Connected   --- +++ :)');
-    else {
-      print('MOsquitto not connected --- :(  and State is ---> ${client.connectionStatus}');
+    if(client.connectionStatus!.state == MqttConnectionState.connected)
+      print('Mosquitto Client is Connected   --- +++ :)');
+    else 
       client.disconnect();
-    }
+    
 
 
   }
@@ -70,7 +67,6 @@ class MqttConnectionService{
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? data) {
       final recMess = data![0].payload as MqttPublishMessage;
       final parseData = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      // print('EXAMPLE::Change notification:: topic is <${data[0].topic}>, payload is <-- $pt -->');
 
       print('Topic is --> ${data[0].topic}');
       print('Data is --> $parseData ');
